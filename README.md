@@ -1,6 +1,6 @@
 // ...existing code...
 
-# trabalho-processamento-matrizes
+# Comparação de Consumo de Energia entre CPU e GPU em Computadores de Uso Doméstico
 
 Repositório com implementações de multiplicação de matrizes (base, OpenMP, MPI e CUDA),
 ferramentas de comparação e dados de teste.
