@@ -1,64 +1,202 @@
 // ...existing code...
 
-# Comparação de Consumo de Energia entre CPU e GPU em Computadores de Uso Doméstico
+# Comparação de Consumo de Energia: CPU vs GPU em Computadores Domésticos
 
-Repositório com implementações de multiplicação de matrizes (base, OpenMP, MPI e CUDA),
-ferramentas de comparação e dados de teste.
+Repositório com múltiplas implementações de multiplicação de matrizes para comparar desempenho e consumo de energia entre diferentes paradigmas de computação.
 
-## Arquivos principais:
-- [src/base.c](src/base.c) — implementação sequencial (funções-chave: [`gerar_matrizes`](src/base.c),       [`multiplicar_matrizes`](src/base.c), [`calculate_checksum`](src/base.c), [`main`](src/base.c))
-- [src/omp.c](src/omp.c) — implementação com OpenMP (funções-chave: [`generate_matrix`](src/omp.c), [`calculate_matrix`](src/omp.c), [`calculate_checksum`](src/omp.c))
-- [src/mpi.c](src/mpi.c) — implementação distribuída com MPI (ex.: distribuição de linhas, gather/scatter)
-- [src/cuda.cu](src/cuda.cu) — implementação CUDA (kernel: [`matmul_tiled`](src/cuda.cu))
-- [tests/compare.py](tests/compare.py) — script Python para gerar matrizes idênticas e comparar duas execuções
-- [LICENSE](LICENSE) — licença MIT
-- [.gitignore](.gitignore) — arquivos ignorados (executáveis, CSVs, IDE)
+## 📋 Descrição do Projeto
 
-## Requisitos
-- compilador C (gcc/clang) com suporte a OpenMP
-- mpicc/mpiexec para MPI
-- NVCC + drivers CUDA (se usar CUDA)
-- Python 3 + numpy (para testes)
-- Windows: quando compilar CUDA use "x64 Native Tools Command Prompt for VS"
+Este projeto implementa multiplicação de matrizes de forma otimizada em:
+- **Sequencial**: implementação base para referência
+- **OpenMP**: paralelismo em memória compartilhada (CPU multi-core)
+- **MPI**: computação distribuída (múltiplas máquinas/nós)
+- **CUDA**: processamento em GPU
 
-## Como compilar
-- Base (sequencial)
-  - gcc -O3 src/base.c -o base.exe
-- OpenMP
-  - gcc -O3 -fopenmp -march=native src/omp.c -o omp.exe
-- MPI
-  - mpicc -O3 -Ofast -fopenmp -march=native -funroll-loops src/mpi.c -o mpi.exe
-- CUDA
-  - nvcc -O3 -arch=native src/cuda.cu -o cuda.exe
+Todas as implementações produzem resultados idênticos (verificados por checksum) para permitir comparação justa de tempo de execução e eficiência energética.
 
-## Como executar (exemplos)
-- Flags comuns:
-  - --l / --length N  → tamanho N x N
-  - --s / --seed S    → seed aleatória
-  - --mt / --matrix_type MT → 0 = gera aleatoriamente a partir da seed; 1 = carrega arquivos matriz1.csv e matriz2.csv
-- Executável base:
-  - ./base.exe --l 2000 --s 45
-- OpenMP:
-  - ./omp.exe --l 2000 --s 40
-- MPI (exemplo):
-  - mpiexec -hostfile hosts -np 8 --bind-to core ./mpi.exe --length 4000 --tile 128
-- CUDA:
-  - ./cuda.exe --l 4000
-  - O binário imprime tempo wall/CPU e um checksum.
+## 📁 Estrutura do Projeto
 
-## Testes e comparação
-- O script [tests/compare.py](tests/compare.py) gera duas cópias idênticas de matriz em CSV e executa dois binários para comparar a saída:
-  - python tests/compare.py --exe1 base.exe --exe2 omp.exe --length 2000
-- Observação: [tests/compare.py](tests/compare.py) espera encontrar os executáveis passados e salva arquivos `matriz1.csv`/`matriz2.csv` (esses arquivos são ignorados pelo [.gitignore](.gitignore)).
+```
+src/
+├── base.c      → Implementação sequencial (referência)
+├── omp.c       → Implementação com OpenMP
+├── mpi.c       → Implementação com MPI (distribuída)
+└── cuda.cu     → Implementação CUDA (GPU)
 
-## Saída e verificação
-- As implementações normalmente imprimem:
-  - tempo de execução (stdout ou stderr dependendo do código)
-  - checksum do resultado (usado para garantir correção)
-- Para depuração, verifique stderr caso a execução falhe.
+tests/
+└── compare.py  → Script para comparar duas implementações
 
-## Boas práticas / dicas
-- Ajuste parâmetros de tile/bloco (TILE/BLOCK) conforme hardware.
-- Em máquinas com muitas threads, experimente OMP_NUM_THREADS.
-- Para comparar corretude entre implementações use [tests/compare.py](tests/compare.py) para garantir mesmas matrizes.
-- Informações experimentais e tempos estão no próprio README original (historico em arquivos).
+LICENSE         → Licença MIT
+README.md       → Este arquivo
+```
+
+## 🛠️ Pré-requisitos
+
+### Obrigatório (Todos os programas)
+- **Compilador C** (GCC ou Clang) com C11+
+- **Python 3** (para testes)
+- **NumPy** (para testes): `pip install numpy`
+
+### Para OpenMP
+- GCC/Clang com suporte a OpenMP (geralmente incluído)
+- Flag: `-fopenmp`
+
+### Para MPI
+- **MPI Implementation** (OpenMPI ou MPICH)
+  - Windows: usar WSL ou instalar OpenMPI para Windows
+  - Linux: `sudo apt install libopenmpi-dev openmpi-bin`
+  - macOS: `brew install open-mpi`
+
+### Para CUDA (GPU)
+- **NVIDIA CUDA Toolkit** (versão 11.0+)
+- **Drivers NVIDIA** atualizados
+- **Visual Studio 2019+** (se no Windows)
+- **Windows**: usar **"x64 Native Tools Command Prompt for VS"** para compilar CUDA
+
+## 🔨 Como Compilar
+
+### 1️⃣ Versão Sequencial (Base)
+```bash
+gcc -O3 src/base.c -o base.exe
+```
+
+### 2️⃣ Versão OpenMP
+```bash
+gcc -O3 -fopenmp -march=native src/omp.c -o omp.exe
+```
+
+### 3️⃣ Versão MPI
+```bash
+mpicc -O3 -Ofast -fopenmp -march=native -funroll-loops src/mpi.c -o mpi.exe
+```
+
+### 4️⃣ Versão CUDA
+```bash
+# Windows (usar x64 Native Tools Command Prompt)
+nvcc -O3 -arch=sm_75 src/cuda.cu -o cuda.exe
+
+# Linux/macOS (adapte -arch conforme sua GPU)
+nvcc -O3 -arch=native src/cuda.cu -o cuda.exe
+```
+---
+
+## 🚀 Como Executar
+
+### Opções Comuns para Todos os Programas
+```
+--l, --length N        → Tamanho da matriz (N × N)
+--s, --seed S          → Seed para gerar números aleatórios (padrão: aleatório)
+--mt, --matrix_type MT → 0 = gera aleatoriamente; 1 = carrega de arquivo CSV
+```
+
+### Exemplo: Versão Base
+```bash
+./base.exe --l 2000 --seed 45
+```
+
+### Exemplo: Versão OpenMP
+```bash
+./omp.exe --l 2000 --seed 40
+```
+
+### Exemplo: Versão MPI
+```bash
+# Executar em 8 processos em 8 cores
+mpiexec -n 8 ./mpi.exe --length 4000 --seed 42
+
+# Com arquivo de hosts (múltiplas máquinas)
+mpiexec -hostfile hosts -np 8 --bind-to core ./mpi.exe --length 4000 --tile 128
+```
+
+### Exemplo: Versão CUDA
+```bash
+./cuda.exe --l 4000 --seed 42
+```
+
+---
+
+## ✅ O que Esperar da Saída
+
+Cada programa imprime:
+- **Tempo de execução** (wall-clock ou CPU time)
+- **Checksum** do resultado (para verificar correção)
+
+Exemplo de saída:
+```
+Tempo de execução: 1234.56 ms
+Checksum: 987654321
+```
+
+---
+
+## 🧪 Testando e Comparando Implementações
+
+O script [tests/compare.py](tests/compare.py) executa duas versões com **exatamente a mesma matriz** e compara os resultados.
+
+### Compilar dois programas
+```bash
+gcc -O3 src/base.c -o base.exe
+gcc -O3 -fopenmp -march=native src/omp.c -o omp.exe
+```
+
+### Executar comparação
+```bash
+python tests/compare.py --exe1 base.exe --exe2 omp.exe --length 2000
+```
+
+**O que faz:** Gera uma matriz 2000×2000, executa ambos os programas com a mesma matriz e compara os checksums.
+
+---
+
+## ⚡ Dicas e Otimizações
+
+| Dica | Descrição |
+|------|-----------|
+| **Usar `-O3`** | Ativa todas as otimizações do compilador |
+| **`-march=native`** | Usa instruções específicas de seu CPU (SSE, AVX, AVX2) |
+| **`OMP_NUM_THREADS`** | Controla núcleos usados no OpenMP: `export OMP_NUM_THREADS=8` |
+| **Testar diferentes tamanhos** | Comece com `--l 1000`, depois `2000`, `4000` |
+| **Verificar GPU** | Use `nvidia-smi` para confirmar se CUDA está detectando GPU |
+
+---
+
+## 🔍 Troubleshooting
+
+| Problema | Solução |
+|----------|---------|
+| Erro ao compilar MPI | Verifique se `mpicc` está instalado: `which mpicc` |
+| CUDA não encontrado | Instale NVIDIA CUDA Toolkit ou adicione ao PATH |
+| Resultados diferem entre versões | Verifique se está usando a mesma `--seed` em ambas |
+| Checksum não bate | Possível overflow ou bug (abra issue no repositório), tente ao invés de utilziar a mesma seed, gerar um Excel com os mesmos valores e processar ele. |
+| Muito lento (OpenMP/MPI) | CPU pode estar limitada; teste com matriz menor |
+
+---
+
+## 📊 Exemplo de Workflow Completo
+
+```bash
+# 1. Compilar tudo
+gcc -O3 src/base.c -o base.exe
+gcc -O3 -fopenmp -march=native src/omp.c -o omp.exe
+mpicc -O3 -Ofast -fopenmp -march=native src/mpi.c -o mpi.exe
+nvcc -O3 -arch=sm_75 src/cuda.cu -o cuda.exe
+
+# 2. Testar cada um (mesma matriz para comparação justa)
+./base.exe --l 2000 --seed 123
+./omp.exe --l 2000 --seed 123
+mpiexec -n 4 ./mpi.exe --l 2000 --seed 123
+./cuda.exe --l 2000 --seed 123
+
+# 3. Comparar dois programas
+python tests/compare.py --exe1 base.exe --exe2 omp.exe --length 2000
+
+# 4. Testar com matrizes maiores (GPU fica mais vantajosa)
+./base.exe --l 5000 --seed 456
+./cuda.exe --l 5000 --seed 456
+```
+
+---
+
+## 📝 Licença
+
+MIT License - veja [LICENSE](LICENSE) para detalhes.
