@@ -121,12 +121,6 @@ Cada programa imprime:
 - **Tempo de execução** (wall-clock ou CPU time)
 - **Checksum** do resultado (para verificar correção)
 
-Exemplo de saída:
-```
-Tempo de execução: 1234.56 ms
-Checksum: 987654321
-```
-
 ---
 
 ## 🧪 Testando e Comparando Implementações
