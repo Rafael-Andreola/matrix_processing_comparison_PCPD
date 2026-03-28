@@ -161,7 +161,7 @@ python tests/compare.py --exe1 base.exe --exe2 omp.exe --length 2000
 | Erro ao compilar MPI | Verifique se `mpicc` está instalado: `which mpicc` |
 | CUDA não encontrado | Instale NVIDIA CUDA Toolkit ou adicione ao PATH |
 | Resultados diferem entre versões | Verifique se está usando a mesma `--seed` em ambas |
-| Checksum não bate | Possível overflow ou bug (abra issue no repositório), tente ao invés de utilziar a mesma seed, gerar um Excel com os mesmos valores e processar ele. |
+| Checksum não bate | Possível overflow ou bug (abra issue no repositório), tente ao invés de utilizar a mesma seed, gerar um Excel com os mesmos valores e processar ele. |
 | Muito lento (OpenMP/MPI) | CPU pode estar limitada; teste com matriz menor |
 
 ---
