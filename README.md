@@ -99,6 +99,12 @@ Cada programa imprime:
 
 ---
 
+## 📈 Resultados dos Testes de Energia
+
+Os resultados dos testes de consumo de energia podem ser encontrados em [tests/energy_tests_results.zip](tests/energy_tests_results.zip). Este arquivo contém dados detalhados sobre o consumo energético de cada implementação (sequencial, OpenMP e CUDA) com diferentes tamanhos de matriz.
+
+---
+
 ## 🧪 Testando e Comparando Implementações
 
 O script [tests/compare.py](tests/compare.py) executa duas versões com **exatamente a mesma matriz** e compara os resultados.
