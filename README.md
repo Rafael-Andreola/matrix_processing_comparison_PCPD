@@ -1,5 +1,3 @@
-// ...existing code...
-
 # Comparação de Consumo de Energia: CPU vs GPU em Computadores Domésticos
 
 Repositório com múltiplas implementações de multiplicação de matrizes para comparar desempenho e consumo de energia entre diferentes paradigmas de computação.
@@ -9,7 +7,6 @@ Repositório com múltiplas implementações de multiplicação de matrizes para
 Este projeto implementa multiplicação de matrizes de forma otimizada em:
 - **Sequencial**: implementação base para referência
 - **OpenMP**: paralelismo em memória compartilhada (CPU multi-core)
-- **MPI**: computação distribuída (múltiplas máquinas/nós)
 - **CUDA**: processamento em GPU
 
 Todas as implementações produzem resultados idênticos (verificados por checksum) para permitir comparação justa de tempo de execução e eficiência energética.
@@ -20,7 +17,6 @@ Todas as implementações produzem resultados idênticos (verificados por checks
 src/
 ├── base.c      → Implementação sequencial (referência)
 ├── omp.c       → Implementação com OpenMP
-├── mpi.c       → Implementação com MPI (distribuída)
 └── cuda.cu     → Implementação CUDA (GPU)
 
 tests/
@@ -41,12 +37,6 @@ README.md       → Este arquivo
 - GCC/Clang com suporte a OpenMP (geralmente incluído)
 - Flag: `-fopenmp`
 
-### Para MPI
-- **MPI Implementation** (OpenMPI ou MPICH)
-  - Windows: usar WSL ou instalar OpenMPI para Windows
-  - Linux: `sudo apt install libopenmpi-dev openmpi-bin`
-  - macOS: `brew install open-mpi`
-
 ### Para CUDA (GPU)
 - **NVIDIA CUDA Toolkit** (versão 11.0+)
 - **Drivers NVIDIA** atualizados
@@ -65,12 +55,7 @@ gcc -O3 src/base.c -o base.exe
 gcc -O3 -fopenmp -march=native src/omp.c -o omp.exe
 ```
 
-### 3️⃣ Versão MPI
-```bash
-mpicc -O3 -Ofast -fopenmp -march=native -funroll-loops src/mpi.c -o mpi.exe
-```
-
-### 4️⃣ Versão CUDA
+### 3️⃣ Versão CUDA
 ```bash
 # Windows (usar x64 Native Tools Command Prompt)
 nvcc -O3 -arch=sm_75 src/cuda.cu -o cuda.exe
@@ -97,15 +82,6 @@ nvcc -O3 -arch=native src/cuda.cu -o cuda.exe
 ### Exemplo: Versão OpenMP
 ```bash
 ./omp.exe --l 2000 --seed 40
-```
-
-### Exemplo: Versão MPI
-```bash
-# Executar em 8 processos em 8 cores
-mpiexec -n 8 ./mpi.exe --length 4000 --seed 42
-
-# Com arquivo de hosts (múltiplas máquinas)
-mpiexec -hostfile hosts -np 8 --bind-to core ./mpi.exe --length 4000 --tile 128
 ```
 
 ### Exemplo: Versão CUDA
@@ -158,11 +134,10 @@ python tests/compare.py --exe1 base.exe --exe2 omp.exe --length 2000
 
 | Problema | Solução |
 |----------|---------|
-| Erro ao compilar MPI | Verifique se `mpicc` está instalado: `which mpicc` |
 | CUDA não encontrado | Instale NVIDIA CUDA Toolkit ou adicione ao PATH |
 | Resultados diferem entre versões | Verifique se está usando a mesma `--seed` em ambas |
 | Checksum não bate | Possível overflow ou bug (abra issue no repositório), tente ao invés de utilizar a mesma seed, gerar um Excel com os mesmos valores e processar ele. |
-| Muito lento (OpenMP/MPI) | CPU pode estar limitada; teste com matriz menor |
+| Muito lento (OpenMP) | CPU pode estar limitada; teste com matriz menor |
 
 ---
 
@@ -172,13 +147,11 @@ python tests/compare.py --exe1 base.exe --exe2 omp.exe --length 2000
 # 1. Compilar tudo
 gcc -O3 src/base.c -o base.exe
 gcc -O3 -fopenmp -march=native src/omp.c -o omp.exe
-mpicc -O3 -Ofast -fopenmp -march=native src/mpi.c -o mpi.exe
 nvcc -O3 -arch=sm_75 src/cuda.cu -o cuda.exe
 
 # 2. Testar cada um (mesma matriz para comparação justa)
 ./base.exe --l 2000 --seed 123
 ./omp.exe --l 2000 --seed 123
-mpiexec -n 4 ./mpi.exe --l 2000 --seed 123
 ./cuda.exe --l 2000 --seed 123
 
 # 3. Comparar dois programas
